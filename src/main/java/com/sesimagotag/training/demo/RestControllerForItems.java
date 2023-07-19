@@ -81,7 +81,15 @@ public class RestControllerForItems {
      */
     @GetMapping(value = "api/v1/items", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Item>> getItems() {
-        return new ResponseEntity<>(itemList, HttpStatus.OK);
+        List<Item> sortedItems = new ArrayList<>(itemList);
+
+        // Sort by price
+        sortedItems.sort(Comparator.comparing(Item::getPrice));
+
+        // Then Sort by name
+        sortedItems.sort(Comparator.comparing(Item::getName));
+
+        return new ResponseEntity<>(sortedItems, HttpStatus.OK);
     }
 
 
