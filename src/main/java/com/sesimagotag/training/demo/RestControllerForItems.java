@@ -28,19 +28,16 @@ public class RestControllerForItems {
     public ResponseEntity<Object> createItems(@RequestBody final List<Item> newItems) {
         int itemsAddedCount=0;
         for(Item item: newItems){
-
-            // make not to submit duplicate items
-           boolean ItemExist=itemList.stream().anyMatch(oldItem->oldItem.getId().equals(item.getId()));
-           if(ItemExist){
-               break;
-           }
-           else{
+            // check for  duplicate requests with the same items in the requestBody
+           boolean ItemExists=itemList.stream().anyMatch(oldItem->oldItem.getId().equals(item.getId()));
+           if(!ItemExists){
                itemList.add(item);
                itemsAddedCount++;
            }
 
+
         }
-       // itemsAddedCount=itemList.size();
+
         return new ResponseEntity<>(itemsAddedCount, HttpStatus.OK);
     }
 
