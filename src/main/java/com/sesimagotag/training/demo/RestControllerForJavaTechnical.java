@@ -60,33 +60,20 @@ public class RestControllerForJavaTechnical {
     public ResponseEntity<Object> incInt(@PathVariable String intId) throws InterruptedException {
         // You must implement something to guarantee that target int will be increment
         // once
-        AtomicInteger i = mapOfInts.computeIfAbsent(intId, k -> new AtomicInteger(0));
-        synchronized (mapOfInts){
-            AtomicInteger ii = mapOfInts.computeIfAbsent(intId, k -> new AtomicInteger(0));
-            int currentValue = ii.getAndIncrement();
-            Thread.sleep(currentValue * 5000L);
-            int newValue = ii.get();
 
+        // NB: I got help from the internet to solve this
+        synchronized (mapOfInts) {
+            AtomicInteger computedValue = mapOfInts.computeIfAbsent(intId, k -> new AtomicInteger(0));
+            int currentValue = computedValue.getAndIncrement();
+            Thread.sleep(currentValue * 5000L);
+
+            int newValue = computedValue.get();
             if (newValue != currentValue + 1) {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
+
+            return new ResponseEntity<>(newValue, HttpStatus.OK);
         }
 
-        Thread.sleep(i * 5000l);
-        int checkBadly = mapOfInts.getOrDefault(intId, new AtomicInteger.valueOf(0));
-        if (checkBadly != i) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-        i++;
-        mapOfInts.put(intId, Integer.valueOf(i));
-        /* End can't be changed */
-
-        return new ResponseEntity<>(Integer.valueOf(i), HttpStatus.OK);
     }
-
-
-
-
-
-
 }
