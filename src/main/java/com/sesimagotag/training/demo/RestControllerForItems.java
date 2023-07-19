@@ -1,9 +1,7 @@
 package com.sesimagotag.training.demo;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.http.HttpStatus;
@@ -18,8 +16,7 @@ import com.sesimagotag.training.demo.entities.Item;
 
 @org.springframework.web.bind.annotation.RestController
 public class RestControllerForItems {
-
-    //private final Map<String, Item> items = Collections.synchronizedMap(new ArrayList<Item>());
+    private final List<Item> itemList=new ArrayList<>();
 
     /**
      * Create all items given in parameters and overwrite existing one.
@@ -28,8 +25,13 @@ public class RestControllerForItems {
      */
     @PostMapping(value = "api/v1/items", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createItems(@RequestParam final List<Item> newItems) {
-        return new ResponseEntity<>(0, HttpStatus.OK);
+    public ResponseEntity<Object> createItems(@RequestBody final List<Item> newItems) {
+        int itemsAddedCount=0;
+        for(Item item: newItems){
+            itemList.add(item);
+        }
+        itemsAddedCount=itemList.size();
+        return new ResponseEntity<>(itemsAddedCount, HttpStatus.OK);
     }
 
     /**
