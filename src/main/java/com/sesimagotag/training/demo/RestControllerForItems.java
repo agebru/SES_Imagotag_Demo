@@ -28,9 +28,19 @@ public class RestControllerForItems {
     public ResponseEntity<Object> createItems(@RequestBody final List<Item> newItems) {
         int itemsAddedCount=0;
         for(Item item: newItems){
-            itemList.add(item);
+
+            // make not to submit duplicate items
+           boolean ItemExist=itemList.stream().anyMatch(oldItem->oldItem.getId().equals(item.getId()));
+           if(ItemExist){
+               break;
+           }
+           else{
+               itemList.add(item);
+               itemsAddedCount++;
+           }
+
         }
-        itemsAddedCount=itemList.size();
+       // itemsAddedCount=itemList.size();
         return new ResponseEntity<>(itemsAddedCount, HttpStatus.OK);
     }
 
