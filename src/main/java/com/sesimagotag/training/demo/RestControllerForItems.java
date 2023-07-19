@@ -109,11 +109,15 @@ public class RestControllerForItems {
             @RequestParam final boolean sort,
             @RequestParam final boolean reverseName) {
 
+        int startIndex=(page-1)*pageSize;
+        int endIndex=Math.min(startIndex + pageSize,itemList.size());
+        List<Item> itemsPerPage = itemList.subList(startIndex, endIndex);
+
         if (sort) {
-            itemList.sort(Comparator.comparing(Item::getPrice).thenComparing(Item::getName));
+            itemsPerPage.sort(Comparator.comparing(Item::getPrice).thenComparing(Item::getName));
         }
         if(reverseName){
-            for(Item item: itemList){
+            for(Item item: itemsPerPage){
                 item.setName(reverse(item.getName()));
             }
         }
