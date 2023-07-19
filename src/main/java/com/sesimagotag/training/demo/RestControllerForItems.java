@@ -13,24 +13,24 @@ import com.sesimagotag.training.demo.entities.Item;
 
 @org.springframework.web.bind.annotation.RestController
 public class RestControllerForItems {
-    private final List<Item> itemList=new ArrayList<>();
+    private final List<Item> itemList = new ArrayList<>();
 
     /**
      * Create all items given in parameters and overwrite existing one.
-     * 
+     *
      * @return count of new items added
      */
     @PostMapping(value = "api/v1/items", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createItems(@RequestBody final List<Item> newItems) {
-        int itemsAddedCount=0;
-        for(Item item: newItems){
+        int itemsAddedCount = 0;
+        for (Item item : newItems) {
             // check for  duplicate requests with the same items in the requestBody
-           boolean ItemExists=itemList.stream().anyMatch(oldItem->oldItem.getId().equals(item.getId()));
-           if(!ItemExists){
-               itemList.add(item);
-               itemsAddedCount++;
-           }
+            boolean ItemExists = itemList.stream().anyMatch(oldItem -> oldItem.getId().equals(item.getId()));
+            if (!ItemExists) {
+                itemList.add(item);
+                itemsAddedCount++;
+            }
 
         }
         return new ResponseEntity<>(itemsAddedCount, HttpStatus.OK);
@@ -41,32 +41,31 @@ public class RestControllerForItems {
      */
     @GetMapping(value = "api/v1/items/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getItem(@PathVariable("itemId") final String itemId) {
-        for(Item item: itemList ){
-            if(item.getId().equals(itemId)){
-                return new ResponseEntity<>(item,HttpStatus.OK);
+        for (Item item : itemList) {
+            if (item.getId().equals(itemId)) {
+                return new ResponseEntity<>(item, HttpStatus.OK);
             }
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    /**
-     * Do not modify existing item list on the reverse operation.
-     * 
-     * @return return item with corresponding itemId and reverse its name in the
-     *         result.
-     */
-    public ResponseEntity<Object> getItemReverse(@RequestParam final int itemId) {
-        return null;
-    }
 
     /**
      * Do not modify existing item list on the reverse operation.
-     * 
+     *
      * @return all items with reverse name
      */
-    @GetMapping(value = "api/v1/items   /reverse", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getItemsReverse() {
-        return null;
+    @GetMapping(value = "api/v1/items/{itemId}/reverse", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getItemsReverse(@PathVariable String itemId) {
+        for (Item item : itemList) {
+            if (item.getId().equals(itemId)) {
+                StringBuilder sb = new StringBuilder();
+                String reversedName = sb.append(item.getName()).reverse().toString();
+                Item ItemWithReversedName = new Item(item.getId(), item.getPrice(), reversedName);
+                return new ResponseEntity<>(ItemWithReversedName,HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -95,7 +94,7 @@ public class RestControllerForItems {
      * <p>
      * page=2 and pageSize=10, return 10->19 elements
      * </p>
-     * 
+     *
      * @param page
      *                    first page, start at 1
      * @param pageSize
@@ -106,8 +105,6 @@ public class RestControllerForItems {
      *                    reverse names (after sorting)
      * @return items
      */
-
-
 
 
 }
