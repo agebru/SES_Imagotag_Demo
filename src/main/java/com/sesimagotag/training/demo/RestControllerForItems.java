@@ -111,17 +111,23 @@ public class RestControllerForItems {
 
         int startIndex=(page-1)*pageSize;
         int endIndex=Math.min(startIndex + pageSize,itemList.size());
-        List<Item> itemsPerPage = itemList.subList(startIndex, endIndex);
 
+        List<Item> sortedItems = new ArrayList<>(itemList);
         if (sort) {
-            itemsPerPage.sort(Comparator.comparing(Item::getPrice).thenComparing(Item::getName));
+            sortedItems.sort(Comparator.comparing(Item::getPrice).thenComparing(Item::getName));
         }
+
+        //Items  to display per page
+        List<Item> itemsPerPage = new ArrayList<>();
+        for (int i = startIndex; i < endIndex; i++) {
+            itemsPerPage.add(sortedItems.get(i));
+        }
+
         if(reverseName){
-            for(Item item: itemsPerPage){
+            for(Item item: sortedItems){
                 item.setName(reverse(item.getName()));
             }
         }
-
         return new ResponseEntity<>(itemList,HttpStatus.OK);
     }
 
