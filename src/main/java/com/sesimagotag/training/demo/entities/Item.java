@@ -3,15 +3,13 @@ package com.sesimagotag.training.demo.entities;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Item implements Serializable {
     private String id;
     private BigDecimal price;

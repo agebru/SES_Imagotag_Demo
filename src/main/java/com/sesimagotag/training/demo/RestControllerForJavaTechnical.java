@@ -34,18 +34,24 @@ public class RestControllerForJavaTechnical {
     public ResponseEntity<Object> testALock() {
         /* Can't be changed */
         items.put("lock", null);
-        lockForItems.lock();
+        // The locks need to be acquired in Order
         try {
+            // lockForItems aquires the lock after lockForItemz is release the lock
+            lockForItems.lock();
             final List<Item> copy = new ArrayList<>(items.values());
             copy.forEach(item -> {
-                System.out.println(item.toString());
+                System.out.println(item);
             });
-            lockForItemz.lock();
-            /* End can't be changed */
-            System.out.println(items.size());
+
+            try{
+                lockForItemz.lock();
+                System.out.println(items.size());
+            } finally {
+                lockForItemz.unlock();
+            }
+
         } finally {
             items.remove("lock");
-            lockForItemz.unlock();
             lockForItems.unlock();
         }
         return new ResponseEntity<>(HttpStatus.OK);
