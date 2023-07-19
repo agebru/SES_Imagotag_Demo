@@ -18,6 +18,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import static javax.crypto.Cipher.SECRET_KEY;
+
 /**
  *
  */
@@ -75,6 +77,21 @@ public class CipherUtil {
 	public String decryptAsB64(final String message) throws InvalidKeyException, NoSuchPaddingException,
 			NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException,
 			InvalidAlgorithmParameterException {
+
+		// I did check the intenet on how to implement decryption as shown in the commented code
+		// NB: I couldn't finish this up
+
+		/*
+		Cipher cipher = Cipher.getInstance(EnumEncryptionType.AES_128.toString());
+		SecretKey secretKey = new SecretKeySpec(SECRET_KEY.getBytes("UTF-8"), "AES");
+		cipher.init(Cipher.DECRYPT_MODE, secretKey);
+		cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+		// Decode Base64 message to byte array
+		byte[] decodedMessage = Base64.getDecoder().decode(message);
+		 byte[] decryptedBytes = cipher.doFinal(decodedMessage);
+		 return String(decryptedBytes, "UTF-8")
+      */
 		return message;
 	}
 
