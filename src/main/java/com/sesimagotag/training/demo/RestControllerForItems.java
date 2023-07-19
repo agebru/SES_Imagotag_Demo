@@ -62,7 +62,7 @@ public class RestControllerForItems {
                 StringBuilder sb = new StringBuilder();
                 String reversedName = sb.append(item.getName()).reverse().toString();
                 Item ItemWithReversedName = new Item(item.getId(), item.getPrice(), reversedName);
-                return new ResponseEntity<>(ItemWithReversedName,HttpStatus.OK);
+                return new ResponseEntity<>(ItemWithReversedName, HttpStatus.OK);
             }
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -80,8 +80,8 @@ public class RestControllerForItems {
      * @return all items
      */
     @GetMapping(value = "api/v1/items", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getItems() {
-        return new ResponseEntity<>(itemList,HttpStatus.OK);
+    public ResponseEntity<List<Item>> getItems() {
+        return new ResponseEntity<>(itemList, HttpStatus.OK);
     }
 
 
@@ -96,16 +96,35 @@ public class RestControllerForItems {
      * page=2 and pageSize=10, return 10->19 elements
      * </p>
      *
-     * @param page
-     *                    first page, start at 1
-     * @param pageSize
-     *                    elements returned in a page
-     * @param sort
-     *                    sort by prices asc and names asc
-     * @param reverseName
-     *                    reverse names (after sorting)
+     * @param page        first page, start at 1
+     * @param pageSize    elements returned in a page
+     * @param sort        sort by prices asc and names asc
+     * @param reverseName reverse names (after sorting)
      * @return items
      */
+    @GetMapping(value = "api/v1/items/iterate", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getItemsIterate(
+            @RequestParam final int page,
+            @RequestParam final int pageSize,
+            @RequestParam final boolean sort,
+            @RequestParam final boolean reverseName) {
 
+        if (sort) {
+            itemList.sort(Comparator.comparing(Item::getPrice).thenComparing(Item::getName));
+        }
+        if(reverseName){
+            for(Item item: itemList){
+                item.setName(reverse(item.getName()));
+            }
+        }
+
+        return new ResponseEntity<>(itemList,HttpStatus.OK);
+    }
+
+    private String reverse(String input) {
+        StringBuilder sb = new StringBuilder(input);
+        return sb.reverse().toString();
+
+    }
 
 }
