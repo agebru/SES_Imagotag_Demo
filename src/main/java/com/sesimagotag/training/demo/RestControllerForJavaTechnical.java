@@ -7,6 +7,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.http.HttpStatus;
@@ -50,19 +53,27 @@ public class RestControllerForJavaTechnical {
 
 
     /* Can't be changed */
-    private Map<String, Integer> mapOfInts = new HashMap<>();
+    private final Map<String, AtomicInteger> mapOfInts = new HashMap<>();
     /* End can't be changed */
-
-
 
     @PostMapping(value = "api/v1/incInt/{intId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> incInt(@PathVariable String intId) throws InterruptedException {
         // You must implement something to guarantee that target int will be increment
         // once
-        /* Can't be changed */
-        int i = mapOfInts.getOrDefault(intId, Integer.valueOf(0));
+        AtomicInteger i = mapOfInts.computeIfAbsent(intId, k -> new AtomicInteger(0));
+        synchronized (mapOfInts){
+            AtomicInteger ii = mapOfInts.computeIfAbsent(intId, k -> new AtomicInteger(0));
+            int currentValue = ii.getAndIncrement();
+            Thread.sleep(currentValue * 5000L);
+            int newValue = ii.get();
+
+            if (newValue != currentValue + 1) {
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
+        }
+
         Thread.sleep(i * 5000l);
-        int checkBadly = mapOfInts.getOrDefault(intId, Integer.valueOf(0));
+        int checkBadly = mapOfInts.getOrDefault(intId, new AtomicInteger.valueOf(0));
         if (checkBadly != i) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
